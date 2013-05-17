@@ -1,0 +1,10 @@
+[server]
+host = localhost
+port = 20025
+
+[log]
+path = smtptrigger.log
+
+[trigger:example]
+pattern = \w+@example.com
+command = python /path/to/script.py
