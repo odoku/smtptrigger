@@ -4,6 +4,12 @@ SMTP Trigger
 This application is an SMTP server which executes a command taking advantage of e-mail reception. 
 
 
+Run
+-------
+
+    ./smtptrigger.py -c ./smtptrigger.conf
+
+
 Options
 -------
 
@@ -16,7 +22,7 @@ Options
   
 
 Config
-------
+-------
 
     [server]
     host = localhost
