@@ -6,17 +6,12 @@ import os
 import multiprocessing
 import smtpd
 import asyncore
-import email
-from email.message import Message
-from email.header import decode_header
-from email.utils import parseaddr
 from optparse import OptionParser
 import ConfigParser
 import subprocess
 import re
 import csv
 import datetime
-from copy import deepcopy
 
 
 __version__ = '0.0.1'
@@ -30,7 +25,8 @@ class SMTPTriggerServer(smtpd.SMTPServer):
         self.patterns = config.patterns
         self.logger = Logger(config.log_filepath)
         smtpd.SMTPServer.__init__(self, (config.server_host, config.server_port), None)
-        self.logger.info('Starting SMTP Server ({0}:{1})'.format(config.server_host, config.server_port))
+        self.logger.info(
+            'Starting SMTP Server ({0}:{1})'.format(config.server_host, config.server_port))
 
     def destroy(self):
         self.logger.info('Quit SMTP Server.')
@@ -39,14 +35,15 @@ class SMTPTriggerServer(smtpd.SMTPServer):
         for email in rcpttos:
             command = self.resolve(email)
             if command:
-                self.logger.info('From:{0}, To:{1}, Exec:{2}'.format(mailfrom, email, ' '.join(command)))
+                self.logger.info(
+                    'From:{0}, To:{1}, Exec:{2}'.format(mailfrom, email, ' '.join(command)))
                 worker = Worker(command, data)
                 worker.start()
                 return worker
 
     def resolve(self, email):
         for regexp, command in self.patterns:
-            if regexp.search(email) != None:
+            if regexp.search(email) is not None:
                 return command
         return None
 
@@ -169,27 +166,38 @@ class Logger(object):
 # =====================================================================
 def parse_options(args=None):
     p = OptionParser(version="ver:%s" % __version__)
-    p.add_option('-c', '--config', action='store', type='string', default=None, help="Config file.")
-    p.add_option('-H', '--host', action='store', type='string', default=None, help="Bind local address.")
-    p.add_option('-p', '--port', action='store', type='int', default=None, help="Bind local port.")
-    p.add_option('-l', '--log', action='store', type='string', default=None, help="Log filepath.")
+    p.add_option(
+        '-c', '--config', action='store', type='string', default=None, help="Config file.")
+    p.add_option(
+        '-H', '--host', action='store', type='string', default=None, help="Bind local address.")
+    p.add_option(
+        '-p', '--port', action='store', type='int', default=None, help="Bind local port.")
+    p.add_option(
+        '-l', '--log', action='store', type='string', default=None, help="Log filepath.")
     return p.parse_args(args)
 
 
-if __name__ == '__main__':
+def main():
     # Parse options
     options, args = parse_options()
 
     # Get config
     config = AppConfig(options.config)
-    if options.host: config['server']['host'] = options.host
-    if options.port: config['server']['port'] = options.port
-    if options.log: config['log']['path'] = options.log
+    if options.host:
+        config['server']['host'] = options.host
+    if options.port:
+        config['server']['port'] = options.port
+    if options.log:
+        config['log']['path'] = options.log
 
     # Create Server
     server = SMTPTriggerServer(config)
 
     try:
         asyncore.loop()
-    except KeyboardInterrupt, e:
+    except KeyboardInterrupt:
         server.destroy()
+
+
+if __name__ == '__main__':
+    main()
