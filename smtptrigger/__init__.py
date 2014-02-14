@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
-import os
-import multiprocessing
-import smtpd
 import asyncore
-from optparse import OptionParser
 import ConfigParser
-import subprocess
-import re
 import csv
 import datetime
+import multiprocessing
+from optparse import OptionParser
+import os
+import pkg_resources
+import re
+import smtpd
+import subprocess
+import sys
 
 
 __version__ = '0.0.1'
@@ -197,6 +197,11 @@ def main():
         asyncore.loop()
     except KeyboardInterrupt:
         server.destroy()
+
+
+def echo_conf(out=sys.stdout):
+    config = pkg_resources.resource_string(__name__, 'conf/sample.conf')
+    out.write(config)
 
 
 if __name__ == '__main__':

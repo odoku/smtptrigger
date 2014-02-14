@@ -1,37 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
-import unittest
-import os
-import ConfigParser
-import StringIO
-import smtptrigger as sf
-import socket
-
-rootpath = os.path.dirname(os.path.abspath(__file__))
-
-class TestSMTPTrigger(unittest.TestCase):
-    config_string = """[server]
-host = localhost
-port = 20025
-
-[log]
-path = smtptrigger.log
-
-[trigger:test001]
-pattern = \w+@test001.com
-command = touch %(test001)s
-
-[trigger:test002]
-pattern = \w+@test002.com
-command = touch %(test002)s
-""" % {
-    'test001': os.path.join(rootpath, 'test001'),
-    'test002': os.path.join(rootpath, 'test002'),
-}
-
-    mail = """From: =?iso-2022-jp?B?GyRCPi5MbkBuGyhCIBskQjYpGyhC?= <honebone@i.softbank.jp>
+From: =?iso-2022-jp?B?GyRCPi5MbkBuGyhCIBskQjYpGyhC?= <honebone@i.softbank.jp>
 Content-Type: multipart/mixed;
     boundary="Apple-Mail=_682EF258-D8A0-4E0D-A757-A30ADB69D218"
 X-Smtp-Server: localhost
@@ -414,27 +381,3 @@ auwAAAAielRYdFNvZnR3YXJlAAB42nNMyU9KVfDMTUxPDUpNTKkEAC+cBdSuDKlNAAAAAElFTkSu
 QmCC
 
 --Apple-Mail=_682EF258-D8A0-4E0D-A757-A30ADB69D218--
-"""
-
-    def get_config(self):
-        config = ConfigParser.SafeConfigParser()
-        config.readfp(StringIO.StringIO(self.config_string))
-        return config
-
-    def setUp(self):
-        config = sf.AppConfig(StringIO.StringIO(self.config_string))
-        self.server = sf.SMTPTriggerServer(config)
-
-    def tearDown(self):
-        filepath = os.path.join(rootpath, 'test001')
-        os.remove(filepath)
-
-    def test_execute(self):
-        from_email = 'hoge@hoge.com'
-        to_email = ('test@test001.com',)
-
-        process = self.server.process_message('peer', from_email, to_email, self.mail)
-        process.join()
-
-if __name__ == '__main__':
-    unittest.main()

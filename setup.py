@@ -10,8 +10,10 @@ setup(
     keywords='smtp,command,trigger',
     url='http://odoku.net',
     packages=find_packages(),
+    include_package_data=True,
     entry_points="""
     [console_scripts]
     smtptrigger = smtptrigger:main
+    smtptrigger_echo_conf = smtptrigger:echo_conf
     """,
 )
